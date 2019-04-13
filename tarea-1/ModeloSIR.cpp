@@ -4,7 +4,7 @@
 using namespace std;
 
 const double gma=0.08;
-const double beta=0.35;
+const double beta=0.605;
 
 double fs(double s,double i, double r,double t){
   return -beta*s*i;
@@ -48,7 +48,7 @@ void UnPasoDeRungeKutta4(double & s,double & i,double & r,double & t,double dt){
 int main(void){
   double t,s,i,r,dt=0.1;
 
-  for(t=0,s=0.999,i=0.001,r=0;t<100; ){
+  for(t=0,s=0.999,i=0.001,r=0;t<1e3; ){
     cout<<t<<"\t"<<s<<"\t"<<i<<"\t"<<r<<endl;
     UnPasoDeRungeKutta4(s,i,r,t,dt);
   }
