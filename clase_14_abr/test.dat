@@ -1,0 +1,7 @@
+unset key
+set xrange [-110:110]
+set yrange [-110:110]
+set size ratio -1
+set parametric
+set trange [0:7]
+set isosamples 12
