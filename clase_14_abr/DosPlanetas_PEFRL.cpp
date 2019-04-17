@@ -5,6 +5,8 @@
 
 using namespace std;
 
+const int N = 2;
+
 const double G=1.0;
 
 const double Zi = 0.1786178958448091;
@@ -25,7 +27,7 @@ public:
   void Inicie(double x0,double y0,double z0,double Vx0,double Vy0,double Vz0,
 	      double m0,double R0);
   void BorreFuerza(void){F.cargue(0,0,0);};
-  void AgruegueFuerza(vector3D dF){F+=dF;};
+  void AgregueFuerza(vector3D dF){F+=dF;};
   void Mueva_r(double dt, double Coeficiente);
   void Mueva_v(double dt, double Coeficiente);
   void Dibujese(void);
@@ -55,13 +57,13 @@ private:
   
 public:
   void CalculeFuerzaEntre(Cuerpo & Planeta1, Cuerpo & Planeta2);
-  void CalculeTodasLasFuerzas(Cuerpos * Planeta);
+  void CalculeTodasLasFuerzas(Cuerpo * Planeta);
 };
-void Colisionador::CalculeFuerzaEmtre(Cuerpo & Planeta1, Cuerpo & Planeta2)
+void Colisionador::CalculeFuerzaEntre(Cuerpo & Planeta1, Cuerpo & Planeta2)
 {
   vector3D dr=Planeta2.r-Planeta1.r;
   double aux = G*Planeta1.m*Planeta2.m*pow(norma2(dr),-1.5);
-  vector3D F = dr*aux;
+  vector3D F1 = dr*aux;
   Planeta1.AgregueFuerza(F1);
   Planeta2.AgregueFuerza(F1*(-1));
 }
@@ -94,11 +96,14 @@ void TermineCuadro(void){
 
 int main(void){
   Cuerpo Planeta[N];
-  double t,tdibujo,dt=1.0;
+  Colisionador Newton;
+  double t,tdibujo,dt=0.1;
   double r=100,
     m0 = 10,
     m1 = 1,
     M,
+    x0,
+    x1,
     omega,
     T,
     V0,
@@ -116,42 +121,31 @@ int main(void){
   V1 = omega*x1;
   
   //------------(x0,y0,z0,Vx0,Vy0,Vz0,  m0, R0)
-  Planeta[0].Inicie(x0 ,0, 0, V0, 0, 0, m0, 1.0);
-  Planeta[1].Inicie(x1, 0, 0, V1, 0, 0, m1, 1.0);
+  Planeta[0].Inicie(x0 ,0, 0, 0, V0, 0, m0, 10);
+  Planeta[1].Inicie(x1, 0, 0, 0, V1, 0, m1, 5);
   
-  for(t=tdibujo=0;t<1.1*T;t+=dt,tdibujo+=dt){
+  for(t=tdibujo=0;t<2*T;t+=dt,tdibujo+=dt){
     //cout<<Planeta.Getx()<<" "<<Planeta.Gety()<<endl;
     
-    if(tdibujo>T/10000){
+    if(tdibujo>T/100000){
       InicieCuadro();
-      Planeta.Dibujese();
+      for(int i = 0; i < N; i++) Planeta[i].Dibujese();
       TermineCuadro();
       tdibujo=0;
     }
     //Moverse segun PEFRL
     for(int i = 0; i < N; i++) Planeta[i].Mueva_r(dt,Zi);
-    
     Newton.CalculeTodasLasFuerzas(Planeta);
-    for(int i = 0; i < N; i++) Planeta.Mueva_v(dt,Coeff1);
-    
-    for(int i = 0; i < N; i++) Planeta.Mueva_r(dt,Xi);
-    
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_v(dt,Coeff1);
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_r(dt,Xi);
     Newton.CalculeTodasLasFuerzas(Planeta);
-    
-    for(int i = 0; i < N; i++) Planeta.Mueva_v(dt,Lambda);
- 
-    for(int i = 0; i < N; i++) Planeta.Mueva_r(dt,Coeff2);
-    
-    Newton.CalculeTodasLasFuerzas(Planeta);
-    
-    for(int i = 0; i < N; i++) Planeta.Mueva_v(dt,Lambda);
-    
-    for(int i = 0; i < N; i++) Planeta.Mueva_r(dt,Xi);
-    
-    Newton.CalculeTodasLasFuerzas(Planeta);
-    
-    for(int i = 0; i < N; i++)Planeta.Mueva_v(dt,Coeff1);
-    
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_v(dt,Lambda);
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_r(dt,Coeff2);    
+    Newton.CalculeTodasLasFuerzas(Planeta);    
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_v(dt,Lambda);    
+    for(int i = 0; i < N; i++) Planeta[i].Mueva_r(dt,Xi);    
+    Newton.CalculeTodasLasFuerzas(Planeta);    
+    for(int i = 0; i < N; i++)Planeta[i].Mueva_v(dt,Coeff1);    
     for(int i = 0; i < N; i++) Planeta[i].Mueva_r(dt,Zi);
   }
   
