@@ -1,0 +1,9 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+file = open("datos","r")
+velocidades = file.readlines()
+velocidades = list(map(float, velocidades))
+stde = np.std(velocidades)
+file.close()
+print(stde*stde)
