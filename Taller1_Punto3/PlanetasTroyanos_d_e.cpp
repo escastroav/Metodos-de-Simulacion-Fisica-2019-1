@@ -32,7 +32,7 @@ public:
   void BorreFuerza(void){F.cargue(0,0,0);};//Inline
   void AgregueFuerza(vector3D dF){F+=dF;};//Inline, le agregamos a la fuerza un vector que pasamos
 
-  //Usando el método de PEFRL, necesito devolverme y calcular la posición y la velocidad usando la velocidad y la fuerza/m respectivamente
+  //Usando el método de Forest-Ruth, necesito devolverme y calcular la posición y la velocidad usando la velocidad y la fuerza/m respectivamente
   void Mueva_r(double dt, double Coeficiente);
   void Mueva_V(double dt, double Coeficiente);
   void Dibujese(void);
@@ -104,8 +104,8 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo * Planetas){
 
 //--------------Funciones Globales ------------------
 void InicieAnimacion(void){
-  std::cout<<"set terminal gif animate"<<std::endl;
-  std::cout<<"set output '3c.gif'"<<std::endl;//El nombre del gif
+  //std::cout<<"set terminal gif animate"<<std::endl;
+  //std::cout<<"set output 'pelicula.gif'"<<std::endl;//El nombre del gif
   std::cout<<"unset key"<<std::endl;
   std::cout<<"set xrange[-1050:1050]"<<std::endl;
   std::cout<<"set yrange[-1050:1050]"<<std::endl;
@@ -127,7 +127,7 @@ void TermineCuadro(){
 int main(){
   Cuerpo Planeta[N];//Tenemos muchos planetas, entonces defino una matríz de N planetas
   Colisionador Newton; //El que calcula la fuerza.
-  double t, dt=1.0, tdibujo;
+  double t, dt=0.1, tdibujo;
   double r = 1000, omega, T;//Se definen distancia entre los planetas, frecuencia de orbita, periodo
   double m0=1047, m1=1, m3 = 0.005;
   double x0, x1, V0, V1, M;
@@ -139,24 +139,26 @@ int main(){
 
   M = m0+m1; omega = sqrt((G*M)/(r*r*r)); T = 2*M_PI/omega;
   x1 = m0*r/M; x0=x1-r; V0=omega*x0; V1=omega*x1;
+  double p=1/1000.0;//Perturbación a las posiciones
 
   //Se dan condiciones iniciales a los planetas
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
-  Planeta[0].Inicie(x0,0,0, 0, V0, 0, m0,100);//Sol
-  Planeta[1].Inicie(x1,0,0, 0, V1, 0, m1,30);//Jupiter
-  Planeta[2].Inicie(r*c60,r*s60,0,-V1*s60,V1*c60,0,m3,15);//Planeta troyano 60° en adelanto
+  Planeta[0].Inicie(x0,0,0, 0, V0, 0, m0,50);//Sol
+  Planeta[1].Inicie(x1,0,0, 0, V1, 0, m1,15);//Jupiter
+  Planeta[2].Inicie(r*(1-p)*c60,r*(1-p)*s60,0,-V1*s60,V1*c60,0,m3,5);//Planeta troyano
   
   //Se empieza a mover el cuerpo
   for(t=tdibujo=0;t<20*T;t+=dt,tdibujo+=dt){
+    //Se imprimen los datos a partir de las funciones Get
     x_rot=cos(omega*t)*Planeta[2].Getx()+sin(omega*t)*Planeta[2].Gety();
     y_rot=-sin(omega*t)*Planeta[2].Getx()+cos(omega*t)*Planeta[2].Gety();
-    std::cout<<x_rot<<" "<<y_rot<<std::endl;//Coord del planeta troyano en el sistema que rota con júpiter
-
+    std::cout<<x_rot<<" "<<y_rot<<" "<<t<<std::endl;//Coord y tiempo del planeta troyano en el sistema que rota con júpiter
+    
     //Para animar
     /*    if(tdibujo>T/500){//el denominador es el número de frames
       InicieCuadro();
       //      for(i=0; i<N; i++) Planeta[i].Dibujese();
-       for(i=0;i<N;i++) Planeta[i].DibujeseRotado(omega, t);
+      for(i=0;i<N;i++) Planeta[i].DibujeseRotado(omega, t);
       TermineCuadro();
       tdibujo=0;
       }*/

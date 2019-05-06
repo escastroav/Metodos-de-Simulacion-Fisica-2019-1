@@ -3,7 +3,7 @@
 #include<fstream>
 #include "Vector.h"
 
-const int N = 3;
+const int N = 2;
 
 const double G=1.0;
 
@@ -32,11 +32,10 @@ public:
   void BorreFuerza(void){F.cargue(0,0,0);};//Inline
   void AgregueFuerza(vector3D dF){F+=dF;};//Inline, le agregamos a la fuerza un vector que pasamos
 
-  //Usando el método de PEFRL, necesito devolverme y calcular la posición y la velocidad usando la velocidad y la fuerza/m respectivamente
+  //Usando el método de Forest-Ruth, necesito devolverme y calcular la posición y la velocidad usando la velocidad y la fuerza/m respectivamente
   void Mueva_r(double dt, double Coeficiente);
   void Mueva_V(double dt, double Coeficiente);
   void Dibujese(void);
-  void DibujeseRotado(double omega, double t);
 
   //Se hacen funciones separadas macro, i.e, que vaya haciendo la funcion mientras se compila el programa, para sacar los datos privados y solo imprimirlos y no modificarlos
   double Getx(void){return r.x();}; //Inline
@@ -70,11 +69,6 @@ void Cuerpo::Dibujese(void){//Es la instrucción para gnuplot de dibujar puntos 
   std::cout<<" , "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t)";
 }
 
-void Cuerpo::DibujeseRotado(double omega, double t){
-  double x_rot=cos(omega*t)*r.x()+sin(omega*t)*r.y();
-  double y_rot=-sin(omega*t)*r.x()+cos(omega*t)*r.y();
-  std::cout<<" , "<<x_rot<<"+"<<R<<"*cos(t),"<<y_rot<<"+"<<R<<"*sin(t)";//Coord del sistema que rota con júpiter
-}
 
 //-----------------Clase Colisionador----------------
 class Colisionador{
@@ -104,11 +98,11 @@ void Colisionador::CalculeTodasLasFuerzas(Cuerpo * Planetas){
 
 //--------------Funciones Globales ------------------
 void InicieAnimacion(void){
-  std::cout<<"set terminal gif animate"<<std::endl;
-  std::cout<<"set output '3c.gif'"<<std::endl;//El nombre del gif
+  //  std::cout<<"set terminal gif animate"<<std::endl;
+  //  std::cout<<"set output '3a.gif'"<<std::endl;//El nombre del gif
   std::cout<<"unset key"<<std::endl;
-  std::cout<<"set xrange[-1050:1050]"<<std::endl;
-  std::cout<<"set yrange[-1050:1050]"<<std::endl;
+  std::cout<<"set xrange[-1100:1100]"<<std::endl;
+  std::cout<<"set yrange[-1100:1100]"<<std::endl;
   std::cout<<"set size ratio -1"<<std::endl;
   std::cout<<"set parametric"<<std::endl;//Una curva paramétrica
   std::cout<<"set trange[0:7]"<<std::endl;
@@ -129,11 +123,9 @@ int main(){
   Colisionador Newton; //El que calcula la fuerza.
   double t, dt=1.0, tdibujo;
   double r = 1000, omega, T;//Se definen distancia entre los planetas, frecuencia de orbita, periodo
-  double m0=1047, m1=1, m3 = 0.005;
+  double m0=1047, m1=1;
   double x0, x1, V0, V1, M;
-  double x_rot, y_rot;
   int i;
-  double c60=cos(M_PI/3), s60=sin(M_PI/3);
 
   //  InicieAnimacion(); //Para animar
 
@@ -142,21 +134,18 @@ int main(){
 
   //Se dan condiciones iniciales a los planetas
   //----------(x0,y0,z0,Vx0,Vy0,Vz0,m0,R0)
-  Planeta[0].Inicie(x0,0,0, 0, V0, 0, m0,100);//Sol
-  Planeta[1].Inicie(x1,0,0, 0, V1, 0, m1,30);//Jupiter
-  Planeta[2].Inicie(r*c60,r*s60,0,-V1*s60,V1*c60,0,m3,15);//Planeta troyano 60° en adelanto
+  Planeta[0].Inicie(x0,0,0, 0, V0, 0, m0,50);//Sol
+  Planeta[1].Inicie(x1,0,0, 0, V1, 0, m1,15);//Jupiter
   
   //Se empieza a mover el cuerpo
   for(t=tdibujo=0;t<20*T;t+=dt,tdibujo+=dt){
-    x_rot=cos(omega*t)*Planeta[2].Getx()+sin(omega*t)*Planeta[2].Gety();
-    y_rot=-sin(omega*t)*Planeta[2].Getx()+cos(omega*t)*Planeta[2].Gety();
-    std::cout<<x_rot<<" "<<y_rot<<std::endl;//Coord del planeta troyano en el sistema que rota con júpiter
-
+    //Imprimo las coordenadas de Júpiter
+    std::cout<<Planeta[1].Getx()<<"\t"<<Planeta[1].Gety()<<std::endl;
+    
     //Para animar
-    /*    if(tdibujo>T/500){//el denominador es el número de frames
+    /*    if(tdibujo>T/200){//el denominador es el número de frames
       InicieCuadro();
-      //      for(i=0; i<N; i++) Planeta[i].Dibujese();
-       for(i=0;i<N;i++) Planeta[i].DibujeseRotado(omega, t);
+      for(i=0; i<N; i++) Planeta[i].Dibujese();
       TermineCuadro();
       tdibujo=0;
       }*/
