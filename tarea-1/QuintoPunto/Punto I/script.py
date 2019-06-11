@@ -21,9 +21,11 @@ def imprimeDesv(i):
 	Temperatura.append(stde*stde)
 	
 
-for i in my_range(1.00,13.25,0.25):
+for i in my_range(1.00,15.00,0.25):
 	imprimeDesv(i)
-imprimeDesv(15)
+
+for i in my_range(15.05,19.55,0.5):
+	imprimeDesv(i)	
 imprimeDesv(20)
 imprimeDesv(30)
 

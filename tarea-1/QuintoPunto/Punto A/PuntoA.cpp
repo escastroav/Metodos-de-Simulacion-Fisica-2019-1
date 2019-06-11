@@ -58,7 +58,7 @@ public:
 void Colisionador::CalculeFuerzaEntre(Cuerpo & Planeta1,Cuerpo & Planeta2){
   vector3D dr=Planeta2.r-Planeta1.r;
   double r02sobrer2 = r0*r0/norma2(dr);
-  double aux=-12*epsilon*(pow(r02sobrer2,6)-pow(r02sobrer2,3))/norma(dr);
+  double aux=-12*epsilon*(pow(r02sobrer2,6)-pow(r02sobrer2,3))/(norma(dr)*norma(dr));
   vector3D F1=dr*aux;
   Planeta1.AgregueFuerza(F1);  Planeta2.AgregueFuerza(F1*(-1));
 }

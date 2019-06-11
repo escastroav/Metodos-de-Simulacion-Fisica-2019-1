@@ -69,7 +69,7 @@ void Colisionador::CalculeFuerzaEntre(Cuerpo & Molecula1,Cuerpo & Molecula2){
   double Norma_dr = norma(dr);
   double r0sobrer = r0/Norma_dr;
   double r0sobrer6 = pow(r0sobrer,6);
-  double aux=-12*epsilon*r0sobrer6*(r0sobrer6-1)/Norma_dr;
+  double aux=-12*epsilon*r0sobrer6*(r0sobrer6-1)/(Norma_dr*Norma_dr);
   vector3D F1=dr*aux;
   Molecula1.AgregueFuerza(F1);  Molecula2.AgregueFuerza(F1*(-1));
 }
@@ -201,7 +201,7 @@ int main(void){
     for(i=0;i<N;i++) Molecula[i].Mueva_r(dt,Zi);
   }
   
-  T=50;
+  T=20;
   for(t=tdibujo=0;t<T;t+=dt,tdibujo+=dt){
 	  
 	// for(i=0;i<N;i++) cout<<Molecula[i].GetVy()<<endl;

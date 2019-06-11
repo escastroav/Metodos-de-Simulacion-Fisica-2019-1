@@ -1,0 +1,7 @@
+Para correr el archivo GasMD se debe compilar como:
+g++ GasMD.cpp -O
+
+y para ejecutar se debe pasar como parámetro kT, por ejemplo, si se desea kT = 10:
+./a.out 10
+
+El archivo run.sh corre el programa para diferentes valores de kT y extrae los datos en un archivo "presion{kT}.dat"
