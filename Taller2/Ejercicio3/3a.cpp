@@ -123,7 +123,7 @@ double LatticeBoltzmann::Fx(double x, double y, double Ax, double Ay){
   //Interpolación del tensor de esfuerzos, sigma=F/A
   sigmaxx0 = sigmaxx(ix,iy)*(1-u)*(1-v) + sigmaxx(ix+1,iy)*u*(1-v) + sigmaxx(ix,iy+1)*(1-u)*v + sigmaxx(ix+1,iy+1)*u*v;
   sigmaxy0 = sigmaxy(ix,iy)*(1-u)*(1-v) + sigmaxy(ix+1,iy)*u*(1-v) + sigmaxy(ix,iy+1)*(1-u)*v + sigmaxy(ix+1,iy+1)*u*v;
-  return sigmaxx0*Ax+sigmaxy0*Ay;
+  return sigmaxx0*Ax+sigmaxy0*Ay;//sigma * A
 }
 
 double LatticeBoltzmann::Fy(double x, double y, double Ax, double Ay){
@@ -204,15 +204,15 @@ void LatticeBoltzmann::TotalF(double Vventilador){
   }
   rho0 = rho(200,32,false); 
   Re = rho0*Vventilador*Ly/Eta;
-  //std::cout<<Re<<"\t"<<2*FxT/(rho0*2*R*Vventilador)<<"\t"<<FyT<<"\n";
-  std::cout<<Vventilador<<"\t"<<FxT<<"\t"<<FyT<<"\n";
+  std::cout<<Re<<"\t"<<2*FxT/(rho0*2*M_PI*R*Vventilador*Vventilador)<<"\t"<<Vventilador<<'\t'<<FxT<<'\t'<<FyT<<"\n";
+  //std::cout<<Vventilador<<"\t"<<FxT<<"\t"<<FyT<<"\n";
 }
 
 int main(void){
   LatticeBoltzmann Aire;
-  int t,tmax=500;
+  int t,tmax=1000;
   double RHOinicial=1.0, Vventilador;
-  for(Vventilador=0;Vventilador<0.3;Vventilador+=0.01){
+  for(Vventilador=0;Vventilador<0.3;Vventilador+=0.005){
   
     Aire.Inicie(RHOinicial,Vventilador,0);
     
