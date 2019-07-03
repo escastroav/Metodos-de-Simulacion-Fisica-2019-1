@@ -167,7 +167,7 @@ void StartAnimation(void){
 
 void StartFrame(void){
     std::cout<<"plot 0,0 ";
-    std::cout<<" ,-0.15 +"<<0.3/7<<"*t,0";
+    std::cout<<" , -0.15 +"<<0.3/7<<"*t,0";
 
 }
 void EndFrame(void){
