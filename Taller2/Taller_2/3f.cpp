@@ -47,9 +47,9 @@ public:
   void Colisione(void);
   void Adveccione(void);
   void Inicie(double rho0,double Ux0,double Uy0);
-  void ImponerCampos(double Vventilador);
+  void ImponerCampos(double Vventilador, double omega);
   void Imprimase(const char * NombreArchivo,double Vventilador);
-  void TotalF(double Vventilador);
+  void TotalF(double Vventilador, double omega);
 };
 LatticeBoltzmann::LatticeBoltzmann(void){
   //Cargar los pesos
@@ -183,8 +183,8 @@ void LatticeBoltzmann::Inicie(double rho0,double Ux0,double Uy0){
 	f[ix][iy][i]=feq(rho0,Ux0,Uy0,i);
 }
 
-void LatticeBoltzmann::ImponerCampos(double Vventilador){
-  int i,ix,iy; double rho0;
+void LatticeBoltzmann::ImponerCampos(double Vventilador, double omega){
+  int i,ix,iy; double rho0, Ux0, Uy0;
   for(ix=0;ix<Lx;ix++)
     for(iy=0;iy<Ly;iy++){
       rho0=rho(ix,iy,false);
@@ -192,8 +192,9 @@ void LatticeBoltzmann::ImponerCampos(double Vventilador){
       if(ix==0) 
 	for(i=0;i<Q;i++)  fnew[ix][iy][i]=feq(rho0,Vventilador,0,i);
       //Obstáculo cilíndrico
-      else if((ix-ixc)*(ix-ixc)+(iy-iyc)*(iy-iyc)<=R2)
-	for(i=0;i<Q;i++)  fnew[ix][iy][i]=feq(rho0,0,0,i);
+      else if((ix-ixc)*(ix-ixc)+(iy-iyc)*(iy-iyc)<=R2){
+	Ux0=-omega*(iy-iyc); Uy0=omega*(ix-ixc);
+	for(i=0;i<Q;i++)  fnew[ix][iy][i]=feq(rho0,Ux0,Uy0,i);}
     }
 }
 
@@ -209,8 +210,7 @@ void LatticeBoltzmann::Imprimase(const char * NombreArchivo,double Vventilador){
   MiArchivo.close();
 }
 
-void LatticeBoltzmann::TotalF(double Vventilador){
-  double Re=0;
+void LatticeBoltzmann::TotalF(double Vventilador, double omega){
   double FxT=0, FyT=0;
   double Axk,Ayk, Pxk,Pyk, Theta, rho0;
   for(int k=0;k<N;k++){
@@ -219,27 +219,24 @@ void LatticeBoltzmann::TotalF(double Vventilador){
     FxT+=Fx(Pxk,Pyk,Axk,Ayk); FyT+=Fy(Pxk,Pyk,Axk,Ayk);
   }
   rho0=rho(200,32,false);
-  Re=rho0*Vventilador*Ly/Eta;
-  std::cout<<Vventilador<<"\t"<<Vventilador*Vventilador*rho0*R<<"\t"<<Re<<"\t"<<FxT<<"\t"<<FyT<<"\n";
+  std::cout<<omega<<"\t"<<-omega*Vventilador*rho0*R*R<<"\t"<<FxT<<"\t"<<FyT<<"\n";
 }
 
 int main(void){
   LatticeBoltzmann Aire;
-  int t,tmax=1500;
+  int t,tmax=1000;
   double RHOinicial=1.0, Vventilador=0.1;
-  
-  for(Vventilador=0.1;Vventilador<=0.34;Vventilador+=0.02){
-    Aire.Inicie(RHOinicial,Vventilador,0);
-  
+
+  double omegaIni=PI2/1000, omegaMax=omegaIni+1e-3, domega=(omegaMax-omegaIni)/20.0;
+  Aire.Inicie(RHOinicial,Vventilador,0);
+  for(double omega=omegaIni;omega<=omegaMax;omega+=domega){
     for(t=0;t<tmax;t++){
       Aire.Colisione();
-      Aire.ImponerCampos(Vventilador);
+      Aire.ImponerCampos(Vventilador, omega);
       Aire.Adveccione();
     }
     
-    //Aire.Imprimase("3a.dat",Vventilador);
-    
-    Aire.TotalF(Vventilador);
+    Aire.TotalF(Vventilador, omega);//Para magnus la que importa es Fy, F=omegaxVvent y omega va en z y Vvent en x
   }
   return 0;
 }
