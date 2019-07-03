@@ -85,13 +85,13 @@ double LatticeBoltzmann::Jy(int ix,int iy,bool UseNew){
   return suma;
 }
 
+//calculo del tensor de esfuerzos
+
 double LatticeBoltzmann::sigmaxx(int ix,int iy,bool UseNew){
   double p = rho(ix, iy, UseNew)/3.0;
   double dUxdx;int i;
   for(dUxdx=0,i=0;i<Q;i++)
     dUxdx+=w[i]*V[0][i]*Jx((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew)/rho((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew);
-  //  dUxdx*=(3.0/Dt);
-  //  return -p+Eta*2*dUxdx;
   return -p+6*Eta*dUxdx/Dt;
 }
 
@@ -101,9 +101,6 @@ double LatticeBoltzmann::sigmaxy(int ix,int iy,bool UseNew){
     dUxdy+=w[i]*V[1][i]*Jx((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew)/rho((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew);
     dUydx+=w[i]*V[0][i]*Jy((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew)/rho((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew);
   }
-  //  dUxdy*=(3.0/Dt);dUydx*=(3.0/Dt);
-  //  return Eta*(dUxdy+dUydx);
-  return 3*Eta*(dUxdy+dUydx)/Dt;
 }
 
 double LatticeBoltzmann::sigmayy(int ix,int iy,bool UseNew){
@@ -111,8 +108,6 @@ double LatticeBoltzmann::sigmayy(int ix,int iy,bool UseNew){
   double dUydy;int i;
   for(dUydy=0,i=0;i<Q;i++)
     dUydy+=w[i]*V[1][i]*Jy((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew)/rho((ix+V[0][i]+Lx)%Lx,(iy+V[1][i]+Ly)%Ly, UseNew);
-  //  dUydy*=(3.0/Dt);
-  //  return -p+Eta*2*dUydy;
   return -p+6*Eta*dUydy/Dt;
 }
 
@@ -193,7 +188,7 @@ void LatticeBoltzmann::ImponerCampos(double Vventilador, double omega){
 	for(i=0;i<Q;i++)  fnew[ix][iy][i]=feq(rho0,Vventilador,0,i);
       //Obstáculo cilíndrico
       else if((ix-ixc)*(ix-ixc)+(iy-iyc)*(iy-iyc)<=R2){
-	Ux0=-omega*(iy-iyc); Uy0=omega*(ix-ixc);
+	Ux0=-omega*(iy-iyc); Uy0=omega*(ix-ixc);//poner a rotar al cilindro con velocidad angular omega
 	for(i=0;i<Q;i++)  fnew[ix][iy][i]=feq(rho0,Ux0,Uy0,i);}
     }
 }

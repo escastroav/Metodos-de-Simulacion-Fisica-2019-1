@@ -81,6 +81,8 @@ double LatticeBoltzmann::Jy(int ix,int iy,bool UseNew){
   return suma;
 }
 
+//calculo de las componentes del tensor de esfuersos
+
 double LatticeBoltzmann::sigmaxx(int ix,int iy){
   double p = rho(ix, iy, false)/3.0;
   double dUxdx = 0;
@@ -135,7 +137,7 @@ double LatticeBoltzmann::Fy(double x, double y, double Ax, double Ay){
   //Interpolación del tensor de esfuerzos, sigma=F/A
   sigmayy0 = sigmayy(ix,iy)*(1-u)*(1-v) + sigmayy(ix+1,iy)*u*(1-v) + sigmayy(ix,iy+1)*(1-u)*v + sigmayy(ix+1,iy+1)*u*v;
   sigmaxy0 = sigmaxy(ix,iy)*(1-u)*(1-v) + sigmaxy(ix+1,iy)*u*(1-v) + sigmaxy(ix,iy+1)*(1-u)*v + sigmaxy(ix+1,iy+1)*u*v;
-  return sigmayy0*Ay+sigmaxy0*Ax;
+  return sigmayy0*Ay+sigmaxy0*Ax;//sigma*A
 }
 
 double LatticeBoltzmann::feq(double rho0,double Ux0,double Uy0,int i){
@@ -200,13 +202,11 @@ void LatticeBoltzmann::TotalF(double Vventilador){
   for(Theta = 0; Theta < 2*M_PI; Theta+=2*M_PI/N){
     Ax = A*cos(Theta);     Ay = A*sin(Theta);
     Px = R*cos(Theta)+ixc; Py = R*sin(Theta)+iyc;
-    FxT+=Fx(Px,Py,Ax,Ay);  FyT+=Fy(Px,Py,Ax,Ay);
+    FxT+=Fx(Px,Py,Ax,Ay);  FyT+=Fy(Px,Py,Ax,Ay);//fuerzas totales en direccion x y y sobre la superficie del cilindro
   }
   rho0 = rho(200,32,false); 
-  Re = rho0*Vventilador*Ly/Eta;
+  Re = rho0*Vventilador*Ly/Eta;//calculo del número de Reynolds
   std::cout<<Re<<"\t"<<2*FxT/(rho0*2*M_PI*R*Vventilador*Vventilador)<<"\t"<<Vventilador<<'\t'<<FxT<<'\t'<<FyT<<"\n";
-  //std::cout<<Vventilador<<"\t"<<FxT<<"\t"<<FyT<<"\n";
-}
 
 int main(void){
   LatticeBoltzmann Aire;
