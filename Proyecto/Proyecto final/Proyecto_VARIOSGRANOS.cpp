@@ -222,8 +222,8 @@ void InicieCuadro(void){
   std::cout<<" , "<<(lx+200)/7<<"*t-100.0,101";
 }
 
-void TermineCuadro(void){
-  std::cout<<std::endl;
+void TermineCuadro(int t){
+  std::cout<<"\n"<<"set title \'t = "<< t << "\'" <<std::endl;
 }
 
 
@@ -279,7 +279,7 @@ int main(){
       for(i=0;i<Molecula.size();i++){
 	Molecula[i].Dibujese();
       }
-      TermineCuadro();
+      TermineCuadro(t);
       tdibujo=0;
     }
     
